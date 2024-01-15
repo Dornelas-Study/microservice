@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Copy 2 elements to &apos;book-service&apos;&#x0A;- Original project: &apos;cambio-service&apos;&#x0A;- Destination element: &apos;book-service&apos;&#x0A;- Original elements:&#x0A;     entrypoint.sh&#x0A;     Dockerfile" description="Copy files" destination="=book-service" element1="entrypoint.sh" element2="Dockerfile" files="2" flags="589830" folders="0" id="org.eclipse.jdt.ui.copy" policy="org.eclipse.jdt.ui.copyResources" stamp="1705179765950" units="0" version="1.0"/>
+</session>

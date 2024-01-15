@@ -1,0 +1,52 @@
+server:
+  port: 8000
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+  instance:
+    prefer-ip-address: "true"
+    hostname: localhost
+management:
+  tracing:
+    sampling:
+      probability: 1.0
+  endpoints:
+    web:
+      exposure:
+        include:
+        - prometheus
+        - '*'
+  metrics:
+    distribution:
+      percentiles-histogram:
+        http:
+          server:
+            request: true
+springdoc:
+  api-docs:
+    path: cambio-service/v3/api-docs
+spring:
+  application:
+    name: cambio-service
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3311/cambio_service?useSSL=false&enabledTLSProtocols=TLSv1.2&allowPublicKeyRetrieval=true
+    username: root
+    password: 123456
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL57Dialect
+  flyway:
+    url: jdbc:mysql://localhost:3311/cambio_service?useSSL=false&enabledTLSProtocols=TLSv1.2&allowPublicKeyRetrieval=true
+    user: root
+    password: 123456
+    driver-class-name: com.mysql.cj.jdbc.Driver
+logging:
+  pattern:
+    level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
+    
