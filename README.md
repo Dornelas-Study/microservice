@@ -1,5 +1,7 @@
 # springboot-sample-app
 
+![Forks](https://img.shields.io/github/forks/Dornelas-Study/microservice)
+![Stars](https://img.shields.io/github/stars/Dornelas-Study/microservice)
 [![Continuos Integration with GitHub](https://github.com/Dornelas-Study/microservice/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/Dornelas-Study/microservice/actions/workflows/docker-publish.yml)
 [![License](http://img.shields.io/:license-apache-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)
 
