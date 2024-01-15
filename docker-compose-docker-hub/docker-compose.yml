@@ -1,0 +1,129 @@
+version: '3.8'
+networks:
+  network-coddefy:
+    driver: bridge
+services:
+  cambio-db:
+    image: mysql:latest
+    restart: always
+    environment:
+       TZ: America/Sao_Paulo
+       MYSQL_ROOT_PASSWORD: 123456
+       MYSQL_USER: docker
+       MYSQL_PASSWORD: docker123
+       MYSQL_DATABASE: cambio_service
+       MYSQL_ROOT_HOST: '%'
+       MYSQL_TCP_PORT: 3311
+    ports:
+      - 3311:3311
+    command: ['mysqld', '--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci']
+    networks:
+      - network-coddefy
+  book-db:
+    image: mysql:latest
+    restart: always
+    environment:
+       TZ: America/Sao_Paulo
+       MYSQL_ROOT_PASSWORD: 123456
+       MYSQL_USER: docker
+       MYSQL_PASSWORD: docker123
+       MYSQL_DATABASE: book_service
+       MYSQL_ROOT_HOST: '%'
+       MYSQL_TCP_PORT: 3310
+    ports:
+      - 3310:3310
+    networks:
+      - network-coddefy
+    command: ['mysqld', '--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci']
+  zipkin-server:
+    image: openzipkin/zipkin:latest
+    restart: always
+    environment:
+      RABBIT_URI: amqp://guest:guest@rabbit-mq:5672
+    ports:
+      - 9411:9411
+    networks:
+      - network-coddefy
+    depends_on:
+      - rabbit-mq
+  rabbit-mq:
+    image: rabbitmq:management-alpine
+    ports:
+      - 5672:5672
+      - 15672:15672
+    networks:
+      - network-coddefy
+  naming-server:
+    image: victordornelasdev/naming-server:latest
+    ports:
+      - 8761:8761
+    networks:
+      - network-coddefy
+  api-gateway:
+    image: victordornelasdev/api-gateway:latest 
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: "http://naming-server:8761/eureka/"
+      #MANAGEMENT_ZIPKIN_TRACING_ENDPOINT: "http://zipkin-server:9411/api/v2/spans"
+      RABBIT_URI: amqp://guest:guest@rabbit-mq:5672
+      SPRING_RABBITMQ_HOST: rabbit-mq
+      SPRING_ZIPKIN_SENDER_TYPE: rabbit
+    ports:
+      - 8765:8765
+    depends_on:
+      - naming-server
+      - rabbit-mq
+    networks:
+      - network-coddefy
+  cambio-service:
+    image: victordornelasdev/cambio-service:latest
+    restart: always
+    environment:
+      TZ: America/Sao_Paulo
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: "http://naming-server:8761/eureka/"
+      SPRING_DATASOURCE_URL: jdbc:mysql://cambio-db:3311/cambio_service?useSSL=false&enabledTLSProtocols=TLSv1.2&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: docker
+      SPRING_DATASOURCE_PASSWORD: docker123
+      SPRING_FLYWAY_URL: jdbc:mysql://cambio-db:3311/cambio_service?useSSL=false&enabledTLSProtocols=TLSv1.2&allowPublicKeyRetrieval=true
+      SPRING_FLYWAY_USER: docker
+      SPRING_FLYWAY_PASSWORD: docker123
+      MANAGEMENT_ZIPKIN_TRACING_ENDPOINT: "http://zipkin-server:9411/api/v2/spans"
+      RABBIT_URI: amqp://guest:guest@rabbit-mq:5672
+      SPRING_RABBITMQ_HOST: rabbit-mq
+      SPRING_ZIPKIN_SENDER_TYPE: rabbit
+    ports:
+      - 8000:8000
+    depends_on:
+      - cambio-db
+      - naming-server
+      - rabbit-mq
+    networks:
+      - network-coddefy
+  book-service:
+    image: victordornelasdev/book-service:latest
+    restart: always
+    environment:
+      TZ: America/Sao_Paulo
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: "http://naming-server:8761/eureka/"
+      SPRING_DATASOURCE_URL: jdbc:mysql://book-db:3310/book_service?useSSL=false&enabledTLSProtocols=TLSv1.2&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: docker
+      SPRING_DATASOURCE_PASSWORD: docker123
+      SPRING_FLYWAY_URL: jdbc:mysql://book-db:3310/book_service?useSSL=false&enabledTLSProtocols=TLSv1.2&allowPublicKeyRetrieval=true
+      SPRING_FLYWAY_USER: docker
+      SPRING_FLYWAY_PASSWORD: docker123
+      MANAGEMENT_ZIPKIN_TRACING_ENDPOINT: "http://zipkin-server:9411/api/v2/spans"
+      RABBIT_URI: amqp://guest:guest@rabbit-mq:5672
+      SPRING_RABBITMQ_HOST: rabbit-mq
+      SPRING_ZIPKIN_SENDER_TYPE: rabbit
+    ports:
+      - 8100:8100
+    depends_on:
+      - book-db
+      - naming-server
+      - rabbit-mq
+    networks:
+      - network-coddefy
+      
+      
+      
+      
+      
