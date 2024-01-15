@@ -26,3 +26,12 @@ jobs:
       - name: Building Eureka Naming Server container
         working-directory: ./naming-server
         run: ./gradlew buildDocker -x test
+      - name: Building API Gateway container
+        working-directory: ./api-gateway
+        run: ./gradlew buildDocker -x test
+      - name: Building Cambio Service jar
+        working-directory: ./cambio-service
+        run: ./gradlew build -x test
+      - name: Building Book Service jar
+        working-directory: ./book-service
+        run: ./gradlew build -x test
