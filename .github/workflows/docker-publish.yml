@@ -35,3 +35,6 @@ jobs:
       - name: Building Book Service jar
         working-directory: ./book-service
         run: ./gradlew build -x test
+      - name: Docker Compose build
+        working-directory: .
+        run: docker-compose build
